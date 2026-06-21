@@ -4,6 +4,68 @@ Four React + Vite websites generated from different one-shot AI prompt strategie
 
 Each folder is a self-contained project with its own dependencies and dev server.
 
+## Live demos
+
+| Site | Live URL |
+|------|----------|
+| mine_prompt | https://oneshot-mine-prompt.surge.sh |
+| rolebase_prompt | https://oneshot-rolebase-prompt.surge.sh |
+| qwen3.7max | https://oneshot-qwen37max.surge.sh |
+| gemini3.1 pro | https://oneshot-gemini31-pro.surge.sh |
+
+---
+
+## Deploy to Surge
+
+All four sites can be published to Surge.sh with one command from the repo root:
+
+```bash
+node scripts/deploy-surge.mjs
+```
+
+Build only (no deploy):
+
+```bash
+node scripts/deploy-surge.mjs --build-only
+```
+
+Deploy only (after builds exist):
+
+```bash
+node scripts/deploy-surge.mjs --deploy-only
+```
+
+### Surge authentication
+
+The deploy script **does not** prompt for login. If you are not authenticated, it exits immediately with instructions.
+
+**Option A — login in your own Windows terminal** (PowerShell or CMD, not Cursor's integrated shell):
+
+```powershell
+npm install -g surge
+surge login
+surge whoami
+cd C:\Users\ninja\OneDrive\Documents\projects\preview_templates
+node scripts/deploy-surge.mjs --deploy-only
+```
+
+**Option B — token for non-interactive deploy** (CI or scripted deploys):
+
+```powershell
+surge login          # once, in external terminal
+surge token          # copy the token it prints
+$env:SURGE_LOGIN = "your@email.com"
+$env:SURGE_TOKEN = "your-token-here"
+node scripts/deploy-surge.mjs --deploy-only
+```
+
+Expected domains:
+
+- `oneshot-mine-prompt.surge.sh`
+- `oneshot-rolebase-prompt.surge.sh`
+- `oneshot-qwen37max.surge.sh`
+- `oneshot-gemini31-pro.surge.sh`
+
 ---
 
 ## mine_prompt

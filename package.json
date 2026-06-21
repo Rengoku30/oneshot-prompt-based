@@ -1,0 +1,8 @@
+{
+  "name": "oneshot-prompt-based",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "deploy": "node scripts/deploy-surge.mjs"
+  }
+}
