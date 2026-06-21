@@ -1,0 +1,175 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================================
+   MINIMALIST MONOCHROME — Design Token Layer
+   ============================================================ */
+@layer base {
+  :root {
+    --background: #ffffff;
+    --foreground: #000000;
+    --muted: #f5f5f5;
+    --muted-foreground: #525252;
+    --accent: #000000;
+    --accent-foreground: #ffffff;
+    --border: #000000;
+    --border-light: #e5e5e5;
+    --card: #ffffff;
+    --card-foreground: #000000;
+    --ring: #000000;
+  }
+
+  /* hairline default border color */
+  *,
+  ::before,
+  ::after {
+    border-color: var(--border-light);
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+    font-family: 'Source Serif 4', Georgia, serif;
+    font-feature-settings: 'liga' 1, 'kern' 1, 'calt' 1;
+    font-size: 1.0625rem;
+    line-height: 1.625;
+    overflow-x: hidden;
+  }
+
+  ::selection {
+    background: #000;
+    color: #fff;
+  }
+
+  h1, h2, h3, h4, h5 {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+  }
+
+  /* slim, sharp scrollbar */
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-track { background: #fff; border-left: 1px solid #000; }
+  ::-webkit-scrollbar-thumb { background: #000; }
+  ::-webkit-scrollbar-thumb:hover { background: #000; }
+}
+
+/* ============================================================
+   TEXTURE UTILITIES — layered patterns for depth (never flat)
+   Applied to dedicated overlay divs only.
+   ============================================================ */
+@layer utilities {
+  .bg-lines {
+    background-image: repeating-linear-gradient(
+      0deg,
+      transparent 0 1px,
+      rgba(0, 0, 0, 0.04) 1px 2px
+    );
+    background-size: 100% 5px;
+  }
+  .bg-lines-light {
+    background-image: repeating-linear-gradient(
+      90deg,
+      transparent 0 1px,
+      rgba(255, 255, 255, 0.06) 1px 2px
+    );
+    background-size: 5px 100%;
+  }
+  .bg-grid {
+    background-image:
+      linear-gradient(rgba(0, 0, 0, 0.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0, 0, 0, 0.035) 1px, transparent 1px);
+    background-size: 44px 44px;
+  }
+  .bg-diagonal {
+    background-image: repeating-linear-gradient(
+      45deg,
+      transparent 0 42px,
+      rgba(0, 0, 0, 0.03) 42px 44px
+    );
+  }
+  .bg-diagonal-light {
+    background-image: repeating-linear-gradient(
+      45deg,
+      transparent 0 42px,
+      rgba(255, 255, 255, 0.05) 42px 44px
+    );
+  }
+  .bg-radial-light {
+    background-image: radial-gradient(
+      circle at 50% 0%,
+      rgba(255, 255, 255, 0.10),
+      transparent 65%
+    );
+  }
+  .bg-noise {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size: 200px 200px;
+  }
+
+  /* dotted leader for editorial lists */
+  .dot-leader {
+    background-image: radial-gradient(circle, #000 1px, transparent 1.5px);
+    background-size: 8px 8px;
+    background-repeat: repeat-x;
+    background-position: 0 60%;
+  }
+
+  /* headings that act as graphics */
+  .text-balance { text-wrap: balance; }
+  .text-pretty { text-wrap: pretty; }
+
+  .stroke-text {
+    -webkit-text-stroke: 1.5px #000;
+    color: transparent;
+  }
+  .stroke-text-light {
+    -webkit-text-stroke: 1.5px #fff;
+    color: transparent;
+  }
+}
+
+/* ============================================================
+   FOCUS SYSTEM — accessibility, monochrome
+   ============================================================ */
+@layer components {
+  /* interactive elements: 3px solid outline, 3px offset */
+  .focus-outline {
+    outline: none;
+  }
+  .focus-outline:focus-visible {
+    outline: 3px solid #000;
+    outline-offset: 3px;
+  }
+  .focus-outline-light:focus-visible {
+    outline: 3px solid #fff;
+    outline-offset: 3px;
+  }
+  .focus-input {
+    outline: none;
+  }
+  .focus-input:focus {
+    border-bottom-width: 4px;
+  }
+}
+
+/* hide default number spinners, etc. */
+input, textarea, button, select { font: inherit; color: inherit; }
+input::placeholder, textarea::placeholder { color: #525252; font-style: italic; }
+
+/* reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0ms !important;
+    transition-duration: 0ms !important;
+    scroll-behavior: auto !important;
+  }
+}

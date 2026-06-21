@@ -1,0 +1,603 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>MERIDIAN — Architects · Preview</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,500;1,600;1,700&family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;0,8..60,500;0,8..60,600;1,8..60,400&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+/* ============ TOKENS ============ */
+:root{
+  --bg:#fff; --fg:#000; --muted:#f5f5f5; --muted-fg:#525252;
+  --border-light:#e5e5e5;
+  --f-display:"Playfair Display",Georgia,serif;
+  --f-serif:"Source Serif 4",Georgia,serif;
+  --f-mono:"JetBrains Mono",ui-monospace,monospace;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;border-color:var(--border-light);}
+html{scroll-behavior:smooth;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:optimizeLegibility;}
+body{background:var(--bg);color:var(--fg);font-family:var(--f-serif);font-size:1.0625rem;line-height:1.625;overflow-x:hidden;}
+::selection{background:#000;color:#fff;}
+img{display:block;max-width:100%;}
+a{color:inherit;text-decoration:none;}
+h1,h2,h3,h4,h5{font-family:var(--f-display);font-weight:700;letter-spacing:-0.025em;}
+
+/* ============ TEXTURES (layered, never flat) ============ */
+.bg-lines{background-image:repeating-linear-gradient(0deg,transparent 0 1px,rgba(0,0,0,.05) 1px 2px);background-size:100% 5px;}
+.bg-lines-light{background-image:repeating-linear-gradient(90deg,transparent 0 1px,rgba(255,255,255,.07) 1px 2px);background-size:5px 100%;}
+.bg-grid{background-image:linear-gradient(rgba(0,0,0,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(0,0,0,.045) 1px,transparent 1px);background-size:44px 44px;}
+.bg-diagonal{background-image:repeating-linear-gradient(45deg,transparent 0 42px,rgba(0,0,0,.035) 42px 44px);}
+.bg-radial-light{background-image:radial-gradient(circle at 50% 0%,rgba(255,255,255,.12),transparent 65%);}
+.bg-noise{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E");background-size:200px 200px;}
+.stroke-text{-webkit-text-stroke:1.5px #000;color:transparent;}
+.stroke-text-light{-webkit-text-stroke:1.5px #fff;color:transparent;}
+
+/* global grain overlay */
+.grain{position:fixed;inset:0;z-index:35;pointer-events:none;opacity:.035;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E");background-size:200px;}
+
+/* ============ LAYOUT HELPERS ============ */
+.container{max-width:1152px;margin:0 auto;padding:0 1.5rem;width:100%;}
+@media(min-width:768px){.container{padding:0 2rem;}}
+@media(min-width:1024px){.container{padding:0 3rem;}}
+.narrow{max-width:56rem;}
+.relative{position:relative;}
+.z10{position:relative;z-index:10;}
+.tx{position:absolute;inset:0;z-index:0;pointer-events:none;}
+section{position:relative;}
+
+.eyebrow{font-family:var(--f-mono);font-size:.7rem;text-transform:uppercase;letter-spacing:.22em;color:rgba(0,0,0,.6);}
+.eyebrow.light{color:rgba(255,255,255,.7);}
+.rule{border:0;border-top:1px solid #000;height:0;width:100%;}
+.rule.thick{border-top-width:4px;}
+.rule.ultra{border-top-width:8px;}
+.rule.light{border-top-color:#fff;}
+.rule.hair{border-top:1px solid var(--border-light);}
+
+/* ============ BUTTONS ============ */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.625rem;font-family:var(--f-mono);text-transform:uppercase;letter-spacing:.18em;font-size:.7rem;font-weight:500;line-height:1;cursor:pointer;transition:background-color .1s,color .1s,border-color .1s;padding:1rem 2rem;border:2px solid #000;}
+.btn.primary{background:#000;color:#fff;}
+.btn.primary:hover{background:#fff;color:#000;}
+.btn.secondary{background:transparent;color:#000;}
+.btn.secondary:hover{background:#000;color:#fff;}
+.btn.ghost{background:transparent;border:none;padding:.5rem 0;text-decoration:underline;text-underline-offset:6px;text-decoration-color:transparent;}
+.btn.ghost:hover{text-decoration-color:#000;}
+.btn.invert{background:#fff;color:#000;border-color:#fff;}
+.btn.invert:hover{background:transparent;color:#fff;}
+.btn .arrow{transition:transform .1s;}
+.btn:hover .arrow{transform:translateX(3px);}
+:focus-visible{outline:3px solid #000;outline-offset:3px;}
+
+/* ============ NAV ============ */
+.nav{position:sticky;top:0;z-index:50;border-bottom:1px solid rgba(0,0,0,.15);background:rgba(255,255,255,.92);backdrop-filter:blur(2px);}
+.nav-inner{display:flex;align-items:center;justify-content:space-between;height:5rem;}
+.wordmark{font-family:var(--f-display);font-size:1.75rem;font-weight:700;letter-spacing:-.02em;line-height:1;}
+.wordmark .it{font-style:italic;color:rgba(0,0,0,.4);font-size:1.2rem;}
+.nav-links{display:none;gap:2.5rem;align-items:center;}
+@media(min-width:768px){.nav-links{display:flex;}}
+.nav-link{font-family:var(--f-mono);font-size:.72rem;text-transform:uppercase;letter-spacing:.2em;color:rgba(0,0,0,.55);position:relative;padding:.5rem 0;transition:color .1s;}
+.nav-link .num{color:rgba(0,0,0,.3);margin-right:.25rem;}
+.nav-link:hover{color:#000;}
+.nav-link .ul{position:absolute;bottom:0;left:0;height:1px;width:100%;background:#000;transform:scaleX(0);transform-origin:left;transition:transform .1s;}
+.nav-link:hover .ul{transform:scaleX(1);}
+.nav-link.active{color:#000;}
+.nav-link.active .ul{transform:scaleX(1);}
+
+/* ============ HERO ============ */
+.hero{background:#fff;overflow:hidden;}
+.hero-inner{min-height:calc(100vh - 5rem);display:flex;flex-direction:column;justify-content:space-between;padding-top:2.5rem;padding-bottom:2.5rem;}
+@media(min-width:768px){.hero-inner{padding-top:4rem;}}
+.meta-row{display:flex;flex-wrap:wrap;justify-content:space-between;gap:.75rem;border-bottom:1px solid rgba(0,0,0,.1);padding-bottom:1.25rem;}
+.hero-grid{display:grid;grid-template-columns:1fr;align-items:center;gap:2.5rem;flex:1;padding:2.5rem 0;}
+@media(min-width:1024px){.hero-grid{grid-template-columns:repeat(12,1fr);gap:2rem;}}
+.hero-grid>div:first-child{grid-column:span 8;}
+@media(min-width:1024px){.hero-grid>div:first-child{grid-column:span 8;}}
+.hero-img-col{grid-column:span 4;}
+@media(max-width:1023px){.hero-grid>div{grid-column:1/-1;}}
+h1.hero-h{font-family:var(--f-display);font-weight:500;letter-spacing:-.05em;line-height:.88;font-size:clamp(3.25rem,13vw,11.5rem);color:#000;}
+.hero-h .blk{display:block;}
+.hero-h .it{display:block;font-style:italic;font-weight:400;}
+.tagline-row{margin-top:2.5rem;display:flex;align-items:center;gap:1rem;}
+.thick-rule-sm{height:3px;width:4rem;background:#000;}
+@media(min-width:768px){.thick-rule-sm{width:6rem;}}
+.sq{display:inline-block;width:12px;height:12px;border:1px solid #000;flex-shrink:0;}
+.tagline{font-family:var(--f-mono);font-size:.7rem;text-transform:uppercase;letter-spacing:.22em;color:rgba(0,0,0,.5);}
+.hero-lede{margin-top:2rem;max-width:36rem;font-family:var(--f-serif);font-size:1.25rem;line-height:1.625;color:rgba(0,0,0,.75);}
+@media(min-width:768px){.hero-lede{font-size:1.375rem;}}
+.hero-cta{margin-top:2.5rem;display:flex;flex-wrap:wrap;align-items:center;gap:1rem;}
+.hero-img-link{display:block;border:2px solid #000;transition:border-width .1s;position:relative;overflow:hidden;}
+.hero-img-link:hover{border-width:4px;}
+.hero-img-link .frame{aspect-ratio:3/4;overflow:hidden;}
+.hero-img-link img{width:100%;height:100%;object-fit:cover;filter:grayscale(1);transition:transform .3s,filter .3s;}
+.hero-img-link:hover img{transform:scale(1.05);filter:grayscale(0);}
+.hero-img-link .badge{position:absolute;left:0;top:0;background:#000;color:#fff;padding:.375rem .75rem;font-family:var(--f-mono);font-size:.6rem;text-transform:uppercase;letter-spacing:.2em;}
+.scroll-row{display:flex;align-items:center;justify-content:space-between;gap:1rem;border-top:1px solid rgba(0,0,0,.1);padding-top:1.25rem;}
+.scroll-cue{display:inline-flex;align-items:center;gap:.5rem;font-family:var(--f-mono);font-size:.65rem;text-transform:uppercase;letter-spacing:.22em;color:rgba(0,0,0,.5);}
+.scroll-cue:hover{color:#000;}
+.scroll-cue svg{transition:transform .1s;}
+.scroll-cue:hover svg{transform:translateY(3px);}
+
+/* ============ SECTION HEADERS ============ */
+.sec{padding-top:6rem;padding-bottom:6rem;}
+@media(min-width:768px){.sec{padding-top:8rem;padding-bottom:8rem;}}
+@media(min-width:1024px){.sec{padding-top:10rem;padding-bottom:10rem;}}
+.sec-head{display:grid;grid-template-columns:1fr;gap:2.5rem;border-bottom:1px solid #000;padding-bottom:3rem;}
+@media(min-width:768px){.sec-head{grid-template-columns:repeat(12,1fr);gap:2rem;}}
+.sec-head .col5{grid-column:span 5;}
+.sec-head .col6{grid-column:span 6;}
+@media(min-width:768px){.sec-head .col6{grid-column:9/span 4;}}
+.sec-title{font-family:var(--f-display);font-weight:500;letter-spacing:-.025em;line-height:1.05;font-size:2.5rem;margin-top:1.5rem;}
+@media(min-width:768px){.sec-title{font-size:3.75rem;}}
+.sec-title .it{font-style:italic;}
+.sec-intro{font-family:var(--f-serif);font-size:1.25rem;line-height:1.625;color:rgba(0,0,0,.7);}
+@media(min-width:768px){.sec-intro{font-size:1.375rem;}}
+
+/* ============ MANIFESTO ============ */
+.manifesto p{font-family:var(--f-display);font-weight:500;letter-spacing:-.025em;line-height:1.35;font-size:1.5rem;}
+@media(min-width:768px){.manifesto p{font-size:2.25rem;}}
+@media(min-width:1024px){.manifesto p{font-size:2.75rem;}}
+.manifesto .it{font-style:italic;}
+.dropcap{float:left;margin-right:.75rem;margin-top:.5rem;display:inline-flex;align-items:center;justify-content:center;border:2px solid #000;font-family:var(--f-display);font-weight:700;font-size:1.875rem;line-height:1;width:4rem;height:4rem;}
+@media(min-width:768px){.dropcap{font-size:2.25rem;width:5rem;height:5rem;}}
+.sig{margin-top:3rem;display:flex;align-items:center;gap:1rem;}
+
+/* ============ STATS (inverted) ============ */
+.stats{background:#000;color:#fff;overflow:hidden;}
+.stats-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:3rem 0;margin-top:3rem;}
+@media(min-width:768px){.stats-grid{grid-template-columns:repeat(4,1fr);}}
+.stat{padding:0 .5rem;}
+@media(min-width:768px){.stat{padding:0 1.5rem;}}
+.stat:not(:first-child){border-left:0;}
+@media(min-width:768px){.stat:not(:first-child){border-left:1px solid rgba(255,255,255,.15);}}
+.stat .val{display:flex;align-items:flex-start;font-family:var(--f-display);font-weight:500;letter-spacing:-.05em;line-height:1;}
+.stat .big{font-size:3.75rem;}
+@media(min-width:768px){.stat .big{font-size:4.5rem;}}
+@media(min-width:1024px){.stat .big{font-size:5rem;}}
+.stat .suf{font-size:1.875rem;margin-top:.25rem;}
+@media(min-width:768px){.stat .suf{font-size:2.25rem;}}
+.stat .lab{margin-top:1rem;display:block;font-family:var(--f-mono);font-size:.68rem;text-transform:uppercase;letter-spacing:.18em;color:rgba(255,255,255,.55);}
+
+/* ============ APPROACH GRID ============ */
+.approach-grid{display:grid;grid-template-columns:1fr;border-left:1px solid #000;border-top:1px solid #000;}
+@media(min-width:640px){.approach-grid{grid-template-columns:repeat(2,1fr);}}
+@media(min-width:1024px){.approach-grid{grid-template-columns:repeat(4,1fr);}}
+.approach-card{display:flex;flex-direction:column;min-height:19rem;border-bottom:1px solid #000;border-right:1px solid #000;background:#fff;padding:2rem;transition:background-color .1s,color .1s;}
+.approach-card:hover{background:#000;color:#fff;}
+.approach-card .row1{display:flex;align-items:center;justify-content:space-between;}
+.approach-card .num{font-family:var(--f-mono);font-size:.75rem;letter-spacing:.2em;color:rgba(0,0,0,.4);}
+.approach-card:hover .num{color:rgba(255,255,255,.5);}
+.approach-card svg{color:#000;transition:color .1s;}
+.approach-card:hover svg{color:#fff;}
+.approach-card h3{margin-top:2.5rem;font-family:var(--f-display);font-weight:500;font-size:1.875rem;letter-spacing:-.025em;}
+.approach-card p{margin-top:1rem;font-size:1rem;line-height:1.625;color:rgba(0,0,0,.7);transition:color .1s;}
+.approach-card:hover p{color:rgba(255,255,255,.75);}
+.approach-card .grow{margin-top:auto;padding-top:2rem;}
+.approach-card .bar{display:block;height:1px;width:2rem;background:#000;transition:width .1s,background-color .1s;}
+.approach-card:hover .bar{width:100%;background:#fff;}
+
+/* ============ WORK GRID ============ */
+.work-grid{display:grid;grid-template-columns:1fr;gap:3.5rem 2rem;margin-top:3rem;}
+@media(min-width:640px){.work-grid{grid-template-columns:repeat(2,1fr);}}
+@media(min-width:1024px){.work-grid{grid-template-columns:repeat(3,1fr);}}
+.pcard{display:block;}
+.pcard .imgwrap{position:relative;overflow:hidden;border:2px solid #000;transition:border-width .1s;}
+.pcard:hover .imgwrap{border-width:4px;}
+.pcard .frame{aspect-ratio:4/5;overflow:hidden;background:var(--muted);}
+.pcard img{width:100%;height:100%;object-fit:cover;filter:grayscale(1);transition:transform .3s,filter .3s;}
+.pcard:hover img{transform:scale(1.05);filter:grayscale(0);}
+.pcard .num{position:absolute;left:0;top:0;background:#000;color:#fff;padding:.25rem .625rem;font-family:var(--f-mono);font-size:.6rem;text-transform:uppercase;letter-spacing:.2em;}
+.pcard .meta{margin-top:1rem;display:flex;align-items:baseline;justify-content:space-between;gap:1rem;}
+.pcard h3{font-family:var(--f-display);font-weight:500;font-size:1.5rem;line-height:1.15;}
+.pcard .yr{font-family:var(--f-mono);font-size:.75rem;color:rgba(0,0,0,.5);}
+.pcard .typ{margin-top:.25rem;font-family:var(--f-mono);font-size:.68rem;text-transform:uppercase;letter-spacing:.16em;color:rgba(0,0,0,.55);}
+
+/* ============ PROCESS (diagonal bg) ============ */
+.process{background:var(--muted);}
+.process-grid{display:grid;grid-template-columns:1fr;margin-top:0;}
+@media(min-width:768px){.process-grid{grid-template-columns:repeat(2,1fr);}}
+@media(min-width:1024px){.process-grid{grid-template-columns:repeat(4,1fr);}}
+.pstep{border-top:2px solid #000;padding:2rem 1.5rem 2.5rem;background:var(--muted);transition:background-color .1s,color .1s;}
+.pstep:not(:first-child){}
+@media(min-width:1024px){.pstep:not(:first-child){border-left:0;}}
+.pstep:hover{background:#000;color:#fff;}
+.pstep .row{display:flex;align-items:center;justify-content:space-between;padding-top:2rem;}
+.pstep .roman{font-family:var(--f-display);font-weight:500;font-size:3rem;line-height:1;letter-spacing:-.025em;}
+@media(min-width:768px){.pstep .roman{font-size:3.75rem;}}
+.pstep .weeks{font-family:var(--f-mono);font-size:.65rem;text-transform:uppercase;letter-spacing:.2em;color:rgba(0,0,0,.45);}
+.pstep:hover .weeks{color:rgba(255,255,255,.55);}
+.pstep h3{margin-top:2rem;font-family:var(--f-display);font-weight:500;font-size:1.5rem;}
+.pstep p{margin-top:1rem;color:rgba(0,0,0,.7);transition:color .1s;}
+.pstep:hover p{color:rgba(255,255,255,.75);}
+
+/* ============ TESTIMONIALS ============ */
+.tgrid{display:grid;grid-template-columns:1fr;gap:1px;background:#000;margin-top:0;}
+@media(min-width:768px){.tgrid{grid-template-columns:repeat(3,1fr);}}
+.tcard{background:#fff;padding:2.5rem;display:flex;flex-direction:column;justify-content:space-between;position:relative;transition:background-color .1s;}
+.tcard .qmark{position:absolute;right:1.5rem;top:1rem;font-family:var(--f-display);font-size:5rem;line-height:1;color:rgba(0,0,0,.06);}
+.tcard blockquote{position:relative;font-family:var(--f-display);font-style:italic;font-size:1.25rem;line-height:1.4;}
+@media(min-width:768px){.tcard blockquote{font-size:1.5rem;}}
+.tcard figcaption{margin-top:2.5rem;border-top:1px solid rgba(0,0,0,.15);padding-top:1.25rem;transition:border-top-width .1s;}
+.tcard:hover figcaption{border-top-width:3px;border-top-color:#000;}
+.tcard .name{font-family:var(--f-display);font-weight:500;font-size:1.125rem;}
+.tcard .role{margin-top:.25rem;font-family:var(--f-mono);font-size:.65rem;text-transform:uppercase;letter-spacing:.18em;color:rgba(0,0,0,.55);}
+
+/* ============ ENGAGEMENT ============ */
+.eng-grid{display:grid;grid-template-columns:1fr;gap:1.5rem;margin-top:3rem;align-items:stretch;}
+@media(min-width:768px){.eng-grid{grid-template-columns:repeat(3,1fr);gap:2rem;}}
+.tier{display:flex;flex-direction:column;border:2px solid #000;padding:2.5rem;background:#fff;color:#000;transition:background-color .1s,color .1s;}
+.tier:hover{background:#000;color:#fff;}
+.tier.elevated{background:#000;color:#fff;border-color:#000;}
+@media(min-width:768px){.tier.elevated{margin-top:-1.5rem;margin-bottom:-1.5rem;}}
+@media(min-width:1024px){.tier.elevated{margin-top:-2.5rem;}}
+.tier.elevated .ribbon{position:absolute;right:0;top:0;background:#fff;color:#000;padding:.375rem .75rem;font-family:var(--f-mono);font-size:.6rem;text-transform:uppercase;letter-spacing:.2em;}
+.tier{position:relative;}
+.tier h3{font-family:var(--f-display);font-weight:500;font-size:1.875rem;}
+.tier .sum{margin-top:.75rem;color:rgba(0,0,0,.7);}
+.tier:hover .sum,.tier.elevated .sum{color:rgba(255,255,255,.7);}
+@media(max-width:767px){.tier.elevated .sum{color:rgba(255,255,255,.7);}}
+.tier .price{margin-top:2rem;border-top:1px solid rgba(0,0,0,.15);padding-top:1.5rem;}
+.tier.elevated .price{border-top-color:rgba(255,255,255,.2);}
+.tier .amt{font-family:var(--f-display);font-weight:500;font-size:2.25rem;}
+.tier .cad{margin-left:.5rem;font-family:var(--f-mono);font-size:.65rem;text-transform:uppercase;letter-spacing:.18em;opacity:.6;}
+.tier ul{margin-top:2rem;flex:1;list-style:none;}
+.tier li{display:flex;align-items:flex-start;gap:.75rem;margin-bottom:.75rem;}
+.tier li svg{margin-top:.25rem;flex-shrink:0;}
+.tier .feat{opacity:.85;}
+.tier .btn{margin-top:2.5rem;width:100%;}
+.tier .btn.secondary:hover{background:#000;color:#fff;}
+
+/* ============ FINAL CTA ============ */
+.cta{background:#000;color:#fff;overflow:hidden;}
+.cta h2{font-family:var(--f-display);font-weight:500;letter-spacing:-.05em;line-height:.9;font-size:clamp(3rem,11vw,10rem);margin-top:2rem;}
+.cta h2 .it{font-style:italic;display:block;}
+.cta h2 .blk{display:block;}
+.cta .lede{margin-top:2.5rem;max-width:36rem;font-size:1.25rem;line-height:1.625;color:rgba(255,255,255,.7);}
+.cta-row{margin-top:3rem;display:flex;flex-wrap:wrap;align-items:center;gap:1.5rem;}
+.cta-mail{font-family:var(--f-display);font-style:italic;font-size:1.5rem;text-decoration:underline;text-underline-offset:6px;text-decoration-color:transparent;}
+.cta-mail:hover{text-decoration-color:#fff;}
+@media(min-width:768px){.cta-mail{font-size:1.875rem;}}
+
+/* ============ FOOTER ============ */
+.footer{border-top:8px solid #000;background:#fff;}
+.press{display:flex;flex-wrap:wrap;align-items:center;gap:.5rem 2rem;padding:2rem 0;border-bottom:1px solid rgba(0,0,0,.1);}
+.press .lbl{font-family:var(--f-mono);font-size:.65rem;text-transform:uppercase;letter-spacing:.22em;color:rgba(0,0,0,.4);}
+.press span{font-family:var(--f-display);font-style:italic;color:rgba(0,0,0,.7);}
+.fmain{padding:4rem 0;}
+@media(min-width:768px){.fmain{padding:6rem 0;}}
+.fgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:3rem 0;}
+@media(min-width:768px){.fgrid{grid-template-columns:repeat(12,1fr);gap:2rem;}}
+.fgrid .c5{grid-column:span 2;}
+@media(min-width:768px){.fgrid .c5{grid-column:span 5;}}
+.fword{font-family:var(--f-display);font-size:3rem;font-weight:700;line-height:1;letter-spacing:-.02em;}
+@media(min-width:768px){.fword{font-size:3.75rem;}}
+.fstmt{margin-top:1.5rem;max-width:28rem;color:rgba(0,0,0,.7);font-size:1.125rem;}
+.fcol h4{font-family:var(--f-mono);font-size:.65rem;text-transform:uppercase;letter-spacing:.22em;color:rgba(0,0,0,.4);font-weight:400;margin-bottom:1.25rem;}
+.fcol a,.fcol address{display:block;color:rgba(0,0,0,.7);margin-bottom:.75rem;font-style:normal;}
+.fcol a{text-decoration:underline;text-underline-offset:4px;text-decoration-color:transparent;}
+.fcol a:hover{text-decoration-color:#000;}
+.fmark{text-align:center;user-select:none;margin-top:2.5rem;}
+.fmark .big{font-size:22vw;line-height:.9;}
+@media(min-width:768px){.fmark .big{font-size:16vw;}}
+.fbottom{display:flex;flex-direction:column;gap:.75rem;border-top:1px solid rgba(0,0,0,.1);padding-top:1.5rem;margin-top:2rem;}
+@media(min-width:768px){.fbottom{flex-direction:row;align-items:center;justify-content:space-between;}}
+.fbottom p{font-family:var(--f-mono);font-size:.65rem;text-transform:uppercase;letter-spacing:.2em;color:rgba(0,0,0,.45);}
+
+.banner{position:fixed;bottom:0;left:0;right:0;z-index:60;background:#000;color:#fff;padding:.75rem 1.5rem;font-family:var(--f-mono);font-size:.62rem;text-transform:uppercase;letter-spacing:.18em;display:flex;justify-content:space-between;gap:1rem;align-items:center;}
+.banner b{font-weight:500;}
+</style>
+</head>
+<body>
+<div class="grain" aria-hidden="true"></div>
+
+<!-- NAV -->
+<header class="nav">
+  <div class="container nav-inner">
+    <span class="wordmark">MERIDIAN <span class="it">architects</span></span>
+    <nav class="nav-links">
+      <a class="nav-link" href="#manifesto"><span class="num">01</span>Studio<span class="ul"></span></a>
+      <a class="nav-link" href="#work"><span class="num">02</span>Work<span class="ul"></span></a>
+      <a class="nav-link" href="#journal"><span class="num">03</span>Journal<span class="ul"></span></a>
+      <a class="nav-link active" href="#contact"><span class="num">04</span>Contact<span class="ul"></span></a>
+    </nav>
+    <a class="btn secondary" href="#contact" style="display:none;">Enquire</a>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="bg-lines tx"></div>
+  <div class="container z10 hero-inner">
+    <div class="meta-row">
+      <span class="eyebrow">Est. 1998</span>
+      <span class="eyebrow" style="display:none;">Copenhagen / New York</span>
+      <span class="eyebrow">Selected work — 1998 / 2024</span>
+    </div>
+    <div class="hero-grid">
+      <div>
+        <h1 class="hero-h">
+          <span class="blk">Architecture</span>
+          <span class="it">as discipline.</span>
+        </h1>
+        <div class="tagline-row">
+          <span class="thick-rule-sm"></span><span class="sq"></span>
+          <span class="tagline">Architecture as Discipline</span>
+        </div>
+        <p class="hero-lede">A studio for form, light, and permanence. We build quiet buildings that intend to outlast their century.</p>
+        <div class="hero-cta">
+          <a class="btn primary" href="#work">Selected work <span class="arrow">→</span></a>
+          <a class="btn ghost" href="#approach">The studio</a>
+        </div>
+      </div>
+      <div class="hero-img-col">
+        <a class="hero-img-link" href="#work">
+          <div class="frame"><img src="__URI_HERO__" alt="A towering minimalist concrete facade in stark black and white." /></div>
+          <span class="badge">House on the Cliff — 2023</span>
+        </a>
+      </div>
+    </div>
+    <div class="scroll-row">
+      <hr class="rule" style="flex:1" />
+      <a class="scroll-cue" href="#manifesto">Scroll ↓</a>
+      <hr class="rule" style="flex:1;display:none;" />
+    </div>
+  </div>
+</section>
+
+<!-- MANIFESTO -->
+<section class="manifesto" id="manifesto">
+  <div class="bg-grid tx"></div>
+  <div class="container narrow z10 sec">
+    <div style="display:flex;align-items:center;gap:1rem;">
+      <span class="eyebrow">Manifesto — 001</span>
+      <span style="height:1px;flex:1;background:rgba(0,0,0,.15);"></span>
+    </div>
+    <p style="margin-top:2.5rem;">
+      <span class="dropcap">W</span>e believe a building should say less and mean more. We work in a single palette — concrete, stone, timber, and light — and we have spent twenty-five years learning how little of it we actually need. <span class="it">Restraint is not a style we apply.</span> It is the standard against which every decision is measured, and usually found wanting.
+    </p>
+    <div class="sig">
+      <span class="thick-rule-sm" style="width:3rem;"></span>
+      <span class="tagline">Ida Meridian, Founding Partner</span>
+    </div>
+  </div>
+</section>
+
+<!-- ultra rule -->
+<hr class="rule ultra" />
+
+<!-- STATS (inverted) -->
+<section class="stats">
+  <div class="bg-lines-light tx"></div>
+  <div class="bg-noise tx" style="opacity:.06;"></div>
+  <div class="container z10" style="padding-top:5rem;padding-bottom:7rem;">
+    <div style="display:flex;flex-direction:column;justify-content:space-between;gap:1.5rem;border-bottom:1px solid rgba(255,255,255,.15);padding-bottom:2rem;">
+      <h2 style="max-width:36rem;font-family:var(--f-display);font-weight:500;font-size:2.25rem;line-height:1.15;letter-spacing:-.025em;">The practice, measured.</h2>
+      <span class="eyebrow light">By the figures — 2026</span>
+    </div>
+    <div class="stats-grid">
+      <div class="stat"><div class="val"><span class="big">25</span><span class="suf">+</span></div><span class="lab">Years in practice</span></div>
+      <div class="stat"><div class="val"><span class="big">184</span></div><span class="lab">Completed commissions</span></div>
+      <div class="stat"><div class="val"><span class="big">42</span></div><span class="lab">International awards</span></div>
+      <div class="stat"><div class="val"><span class="big">14</span></div><span class="lab">Countries built</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- APPROACH -->
+<section id="approach" class="bg-lines" style="background-image:repeating-linear-gradient(0deg,transparent 0 1px,rgba(0,0,0,.05) 1px 2px);background-size:100% 5px;">
+  <div class="container z10 sec">
+    <div class="sec-head">
+      <div class="col5">
+        <span class="eyebrow">The discipline</span>
+        <h2 class="sec-title">Four convictions,<br><span class="it">held without exception.</span></h2>
+      </div>
+      <div class="col6">
+        <p class="sec-intro">We do not have a house style. We have a house discipline — a small set of beliefs we apply to every commission, regardless of size, budget, or fashion. These four are the spine of every building we have made.</p>
+      </div>
+    </div>
+    <div class="approach-grid">
+      <article class="approach-card">
+        <div class="row1"><span class="num">01</span><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></div>
+        <h3>Light</h3>
+        <p>We begin with the path of the sun. Orientation, aperture, and shadow are decided before a single line is drawn for form.</p>
+        <div class="grow"><span class="bar"></span></div>
+      </article>
+      <article class="approach-card">
+        <div class="row1"><span class="num">02</span><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25"><path d="M12 2 2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg></div>
+        <h3>Material</h3>
+        <p>Concrete, stone, oak, plaster. Few materials, chosen once, allowed to age without apology. Honesty over novelty.</p>
+        <div class="grow"><span class="bar"></span></div>
+      </article>
+      <article class="approach-card">
+        <div class="row1"><span class="num">03</span><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25"><path d="M5 12h14"/></svg></div>
+        <h3>Restraint</h3>
+        <p>Every element must earn its place. We remove until only the necessary remains — then remove again, if it can bear it.</p>
+        <div class="grow"><span class="bar"></span></div>
+      </article>
+      <article class="approach-card">
+        <div class="row1"><span class="num">04</span><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25"><path d="m8 3 4 8 5-5 5 15H2L8 3z"/></svg></div>
+        <h3>Permanence</h3>
+        <p>A building is a long sentence spoken slowly. We design for the fourth generation, not the first photograph.</p>
+        <div class="grow"><span class="bar"></span></div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<hr class="rule thick" />
+
+<!-- SELECTED WORK -->
+<section id="work">
+  <div class="bg-lines tx"></div>
+  <div class="container z10 sec">
+    <div style="display:flex;flex-direction:column;gap:1.5rem;border-bottom:1px solid #000;padding-bottom:2rem;">
+      <div>
+        <span class="eyebrow">Selected work</span>
+        <h2 class="sec-title">Built things,<br><span class="it">made to last.</span></h2>
+      </div>
+    </div>
+    <div class="work-grid">
+      <a class="pcard" href="#work">
+        <div class="imgwrap"><div class="frame"><img src="__URI_WORK_CLIFF__" alt="House on the Cliff" /></div><span class="num">01</span></div>
+        <div class="meta"><h3>House on the Cliff</h3><span class="yr">2023</span></div>
+        <div class="typ">Private Residence — Faroe Islands, DK</div>
+      </a>
+      <a class="pcard" href="#work">
+        <div class="imgwrap"><div class="frame"><img src="__URI_WORK_PAVILION__" alt="Monolith Pavilion" /></div><span class="num">02</span></div>
+        <div class="meta"><h3>Monolith Pavilion</h3><span class="yr">2022</span></div>
+        <div class="typ">Cultural — Venice, IT</div>
+      </a>
+      <a class="pcard" href="#work">
+        <div class="imgwrap"><div class="frame"><img src="__URI_WORK_READING__" alt="The Reading Room" /></div><span class="num">03</span></div>
+        <div class="meta"><h3>The Reading Room</h3><span class="yr">2021</span></div>
+        <div class="typ">Civic / Library — Helsinki, FI</div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<hr class="rule thick" />
+
+<!-- PROCESS -->
+<section class="process">
+  <div class="bg-diagonal tx"></div>
+  <div class="container z10 sec">
+    <div class="sec-head">
+      <div class="col5">
+        <span class="eyebrow">Process</span>
+        <h2 class="sec-title">Four movements,<br><span class="it">played slowly.</span></h2>
+      </div>
+      <div class="col6">
+        <p class="sec-intro">Architecture is not a sprint to a render. It is a sequence of patient, distinct phases — each given the time it demands. We do not skip steps, and we do not rush the slow ones.</p>
+      </div>
+    </div>
+    <div class="process-grid">
+      <div class="pstep"><div class="row"><span class="roman">I</span><span class="weeks">Weeks 1–4</span></div><h3>Listening</h3><p>Before drawings, we read the site. We walk it at dawn and dusk, in rain and clear weather, and listen to the people who will inhabit it.</p></div>
+      <div class="pstep"><div class="row"><span class="roman">II</span><span class="weeks">Weeks 4–12</span></div><h3>Reduction</h3><p>The brief is interrogated until only its spine remains. We sketch by hand, in pencil, until the idea will not simplify further.</p></div>
+      <div class="pstep"><div class="row"><span class="roman">III</span><span class="weeks">Months 3–9</span></div><h3>Drawing</h3><p>Precise drawings and full-scale mock-ups. Materials sampled against the actual light of the site. Nothing left to interpretation.</p></div>
+      <div class="pstep"><div class="row"><span class="roman">IV</span><span class="weeks">Year 1+</span></div><h3>Building</h3><p>We remain on site through construction. The architect who drew the detail is the architect who watches it built.</p></div>
+    </div>
+  </div>
+</section>
+
+<hr class="rule thick" />
+
+<!-- TESTIMONIALS -->
+<section>
+  <div class="bg-lines tx"></div>
+  <div class="container z10 sec">
+    <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:1.5rem;border-bottom:1px solid #000;padding-bottom:2rem;">
+      <div>
+        <span class="eyebrow">In their words</span>
+        <h2 class="sec-title">What clients<br><span class="it">say, years later.</span></h2>
+      </div>
+      <span style="font-family:var(--f-display);font-size:7rem;line-height:1;color:rgba(0,0,0,.1);">&rdquo;</span>
+    </div>
+    <div class="tgrid">
+      <figure class="tcard"><span class="qmark">&rdquo;</span><blockquote>They built us a house that is quieter than the landscape around it. Twenty years on, it has only become more itself.</blockquote><figcaption><p class="name">Astrid Holm</p><p class="role">Client, House on the Cliff</p></figcaption></figure>
+      <figure class="tcard"><span class="qmark">&rdquo;</span><blockquote>Meridian does not decorate. They decide. Every millimetre was argued for, and you can feel that conviction inside it.</blockquote><figcaption><p class="name">Markus Lehto</p><p class="role">Director, Helsinki City Library</p></figcaption></figure>
+      <figure class="tcard"><span class="qmark">&rdquo;</span><blockquote>I have published four monographs of their work. I have never once had to crop a photograph to hide a mistake.</blockquote><figcaption><p class="name">Editor</p><p class="role">Architectural Review</p></figcaption></figure>
+    </div>
+  </div>
+</section>
+
+<hr class="rule thick" />
+
+<!-- ENGAGEMENT -->
+<section>
+  <div class="bg-grid tx"></div>
+  <div class="container z10 sec">
+    <div class="sec-head">
+      <div class="col5">
+        <span class="eyebrow">Engagement</span>
+        <h2 class="sec-title">Three ways<br><span class="it">to begin.</span></h2>
+      </div>
+      <div class="col6">
+        <p class="sec-intro">Every relationship starts with conversation. These are the forms that conversation can take — from a single foundational study to a lifetime of counsel.</p>
+      </div>
+    </div>
+    <div class="eng-grid">
+      <article class="tier">
+        <h3>Concept</h3>
+        <p class="sum">A foundational study to test the idea before commitment.</p>
+        <div class="price"><span class="amt">From enquiry</span><span class="cad">per study</span></div>
+        <ul><li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 6 9 17l-5-5"/></svg><span class="feat">Site &amp; light analysis</span></li><li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 6 9 17l-5-5"/></svg><span class="feat">Hand-drawn concept</span></li><li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 6 9 17l-5-5"/></svg><span class="feat">Material direction</span></li><li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 6 9 17l-5-5"/></svg><span class="feat">Feasibility report</span></li></ul>
+        <a class="btn secondary" href="#contact">Enquire <span class="arrow">→</span></a>
+      </article>
+      <article class="tier elevated">
+        <span class="ribbon">The practice</span>
+        <h3>Full Service</h3>
+        <p class="sum">The complete practice, from first sketch to final detail on site.</p>
+        <div class="price"><span class="amt">By project</span><span class="cad">design → build</span></div>
+        <ul><li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 6 9 17l-5-5"/></svg><span class="feat">Everything in Concept</span></li><li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 6 9 17l-5-5"/></svg><span class="feat">Detailed design &amp; drawings</span></li><li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 6 9 17l-5-5"/></svg><span class="feat">Full-scale material mock-ups</span></li><li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 6 9 17l-5-5"/></svg><span class="feat">On-site construction oversight</span></li></ul>
+        <a class="btn invert" href="#contact">Enquire <span class="arrow">→</span></a>
+      </article>
+      <article class="tier">
+        <h3>Counsel</h3>
+        <p class="sum">Long-form advisory for institutions and recurring clients.</p>
+        <div class="price"><span class="amt">Retainer</span><span class="cad">ongoing</span></div>
+        <ul><li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 6 9 17l-5-5"/></svg><span class="feat">Strategic counsel</span></li><li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 6 9 17l-5-5"/></svg><span class="feat">Master planning</span></li><li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 6 9 17l-5-5"/></svg><span class="feat">Competitions &amp; juries</span></li><li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 6 9 17l-5-5"/></svg><span class="feat">Biannual site reviews</span></li></ul>
+        <a class="btn secondary" href="#contact">Enquire <span class="arrow">→</span></a>
+      </article>
+    </div>
+  </div>
+</section>
+
+<hr class="rule ultra" />
+
+<!-- FINAL CTA -->
+<section class="cta" id="contact">
+  <div class="bg-radial-light tx"></div>
+  <div class="bg-noise tx" style="opacity:.05;"></div>
+  <div class="container z10" style="padding-top:7rem;padding-bottom:13rem;">
+    <div style="display:flex;align-items:center;gap:1rem;">
+      <span class="eyebrow light">Begin</span>
+      <span style="height:1px;flex:1;background:rgba(255,255,255,.2);"></span>
+    </div>
+    <h2><span class="blk">Tell us</span><span class="it">what you intend</span><span class="blk">to build.</span></h2>
+    <p class="lede">We take on a small number of commissions each year. If you have a site, a brief, or only an instinct, write to us. Conversations cost nothing and obligate nothing.</p>
+    <div class="cta-row">
+      <a class="btn invert" href="#contact">Start a project <span class="arrow">→</span></a>
+      <a class="cta-mail" href="mailto:studio@meridian.archi">studio@meridian.archi</a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="container press">
+    <span class="lbl">As featured in</span>
+    <span>Architectural Review</span><span>Domus</span><span>Dezeen</span><span>Wallpaper*</span><span>El Croquis</span><span>A+U</span>
+  </div>
+  <div class="container fmain">
+    <div class="fgrid">
+      <div class="c5">
+        <span class="fword">MERIDIAN</span>
+        <p class="fstmt">A studio for form, light, and permanence. We build quiet buildings that intend to outlast their century.</p>
+      </div>
+      <div class="fcol" style="grid-column:span 2;">
+        <h4>Index</h4>
+        <a href="#manifesto">Studio</a><a href="#work">Work</a><a href="#journal">Journal</a><a href="#contact">Contact</a>
+      </div>
+      <div class="fcol" style="grid-column:span 2;">
+        <h4>Studio</h4>
+        <address>Bredgade 42<br>1260 Copenhagen K<br>Denmark</address>
+        <address>120 Greenwich St, Fl. 9<br>New York, NY 10006</address>
+      </div>
+      <div class="fcol" style="grid-column:span 3;">
+        <h4>Contact</h4>
+        <a href="mailto:studio@meridian.archi">studio@meridian.archi</a>
+        <a href="tel:+4533120098">+45 33 12 00 98</a>
+      </div>
+    </div>
+    <div class="fmark"><span class="big stroke-text">MERIDIAN</span></div>
+    <div class="fbottom">
+      <p>© 2026 Meridian Architects. Est. 1998.</p>
+      <p>Architecture as Discipline</p>
+    </div>
+  </div>
+</footer>
+
+<div class="banner"><b>PREVIEW</b> static rendering of the React homepage · hover the cards, tiers &amp; images to see inversions</div>
+</body>
+</html>

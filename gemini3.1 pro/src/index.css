@@ -1,0 +1,210 @@
+@import "tailwindcss";
+
+@theme {
+  --font-display: "Playfair Display", Georgia, serif;
+  --font-body: "Source Serif 4", Georgia, serif;
+  --font-mono: "JetBrains Mono", monospace;
+
+  --color-background: #FFFFFF;
+  --color-foreground: #000000;
+  --color-muted: #F5F5F5;
+  --color-muted-foreground: #525252;
+  --color-accent: #000000;
+  --color-accent-foreground: #FFFFFF;
+  --color-border: #000000;
+  --color-border-light: #E5E5E5;
+  --color-card: #FFFFFF;
+  --color-card-foreground: #000000;
+  --color-ring: #000000;
+
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.25rem;
+  --text-2xl: 1.5rem;
+  --text-3xl: 2rem;
+  --text-4xl: 2.5rem;
+  --text-5xl: 3.5rem;
+  --text-6xl: 4.5rem;
+  --text-7xl: 6rem;
+  --text-8xl: 8rem;
+  --text-9xl: 10rem;
+}
+
+:root {
+  --background: #FFFFFF;
+  --foreground: #000000;
+  --muted: #F5F5F5;
+  --muted-foreground: #525252;
+  --accent: #000000;
+  --accent-foreground: #FFFFFF;
+  --border: #000000;
+  --border-light: #E5E5E5;
+  --card: #FFFFFF;
+  --card-foreground: #000000;
+  --ring: #000000;
+}
+
+body {
+  font-family: var(--font-body);
+  background-color: var(--background);
+  color: var(--foreground);
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+/* Base Headings */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+}
+
+/* Custom Textures & Patterns */
+
+/* Primary Pattern: Horizontal Lines (Global) */
+.texture-horizontal-lines {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 1px,
+    #000 1px,
+    #000 2px
+  );
+  background-size: 100% 4px;
+  opacity: 0.015;
+  z-index: 1;
+}
+
+/* Secondary Pattern: Grid (for editorial sections like Product Detail) */
+.texture-editorial-grid {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(#00000008 1px, transparent 1px),
+    linear-gradient(90deg, #00000008 1px, transparent 1px);
+  background-size: 40px 40px;
+  opacity: 0.015;
+  z-index: 1;
+}
+
+/* Diagonal Lines (for process/timeline sections) */
+.texture-diagonal-lines {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: repeating-linear-gradient(
+    45deg,
+    transparent,
+    transparent 40px,
+    #00000008 40px,
+    #00000008 42px
+  );
+  opacity: 0.01;
+  z-index: 1;
+}
+
+/* Noise Texture (global, for paper-like quality) */
+.texture-noise {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  opacity: 0.02;
+  z-index: 1;
+}
+
+/* Inverted Section Textures */
+.texture-stats-vertical {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: repeating-linear-gradient(
+    90deg,
+    transparent,
+    transparent 1px,
+    #fff 1px,
+    #fff 2px
+  );
+  background-size: 4px 100%;
+  opacity: 0.03;
+  z-index: 1;
+}
+
+.texture-cta-radial {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: radial-gradient(
+    circle at top center,
+    #ffffff,
+    transparent 70%
+  );
+  opacity: 0.05;
+  z-index: 1;
+}
+
+/* Accessibility Focus States */
+.focus-ring-primary {
+  outline: none;
+}
+.focus-ring-primary:focus-visible {
+  outline: 3px solid #000000;
+  outline-offset: 3px;
+}
+
+.focus-ring-inverted {
+  outline: none;
+}
+.focus-ring-inverted:focus-visible {
+  outline: 3px solid #FFFFFF;
+  outline-offset: 3px;
+}
+
+.focus-input {
+  outline: none;
+}
+.focus-input:focus {
+  border-bottom-width: 4px;
+}
+.focus-input:focus-visible {
+  border-bottom-width: 4px;
+  outline: none;
+}
+
+/* Link Focus */
+.focus-link {
+  outline: none;
+}
+.focus-link:focus-visible {
+  border-bottom: 2px solid #000000;
+  outline: none;
+}
+
+/* Custom Border Utilities for strict adherence */
+.border-hairline { border-color: var(--border-light); border-width: 1px; }
+.border-thin { border-color: var(--border); border-width: 1px; }
+.border-medium { border-color: var(--border); border-width: 2px; }
+.border-thick { border-color: var(--border); border-width: 4px; }
+.border-ultra { border-color: var(--border); border-width: 8px; }
+
+/* Skip Link */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: #000000;
+  color: #FFFFFF;
+  padding: 8px 16px;
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  z-index: 100;
+  transition: top 0.1s;
+}
+.skip-link:focus {
+  top: 0;
+}
