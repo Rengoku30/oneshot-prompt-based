@@ -62,7 +62,7 @@ Runs at **http://localhost:5175** (or the next available port)
 
 ## gemini3.1 pro
 
-![gemini3.1 pro](previews/gemini3.1 pro.png)
+![gemini3.1 pro](previews/gemini3.1%20pro.png)
 
 Interactive architectural monograph (**AUSTERE**) with oversized hero typography, product detail, process timeline, blog gallery, testimonials, pricing, and modal-driven interactions throughout.
 
